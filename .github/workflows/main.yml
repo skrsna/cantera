@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   ubuntu-latest:
-    name: Ubuntu Latest
+    name: Ubuntu Latest Multiple Pythons
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -19,8 +19,22 @@ jobs:
         python-version: ${{ matrix.python-version }}
         architecture: x64
     - name: Install Apt dependencies
-      run: sudo apt-get install libboost-dev 
+      run: sudo apt-get install libboost-dev gfortran
     - name: Install Python dependencies
-      run: python -m pip install ruamel.yaml cython scons numpy
+      run: python3 -m pip install ruamel.yaml cython scons numpy
     - name: Build Cantera
-      run: python3 `which scons` build
+      run: python3 `which scons` build -j2
+
+  ubuntu-latest-py2:
+    # Ubuntu latest using Python 2 to run SCons and the system Python 3 for the interface
+    name: Python 2 running SCons on Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout the repository
+      - name: Install Apt dependencies
+        run: sudo apt-get install libboost-dev gfortran scons python3-numpy python3-pip
+      - name: Install Python dependencies
+        run: sudo /usr/bin/python3 -m pip install ruamel.yaml cython
+      - name: Build Cantera
+        run: scons build python_cmd=/usr/bin/python3 -j2
