@@ -53,7 +53,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         name: Checkout the repository
-      - name: Find out where conda is located
-        run: which conda
-      - name: Find out where conda is located
-        run: find / -name miniconda3 -type d
+      - name: Install conda dependencies
+        run: |
+        eval "$(conda shell.bash hook)";
+        conda activate;
+        conda info;
+        conda install -c conda-forge sundials scons numpy ruamel_yaml cython libboost
+      - name: Build Cantera
+        run: |
+        eval "$(conda shell.bash hook)";
+        conda activate;
+        scons build boost_inc_dir=$CONDA/include system_sundials=y sundials_include=$CONDA/include sundials_libdir=$CONDA/lib
