@@ -21,7 +21,7 @@ jobs:
     - name: Install Apt dependencies
       run: sudo apt-get install libboost-dev gfortran
     - name: Install Python dependencies
-      run: python3 -m pip install ruamel.yaml cython scons numpy
+      run: python3 -m pip install ruamel.yaml cython scons numpy --install-option='--no-cython-compile'
     - name: Build Cantera
       run: python3 `which scons` build
     - name: Test Cantera
@@ -39,7 +39,7 @@ jobs:
       - name: Install Apt dependencies
         run: sudo apt-get install libboost-dev gfortran scons python3-numpy python3-pip python3-setuptools
       - name: Install Python dependencies
-        run: sudo -H /usr/bin/python3 -m pip install ruamel.yaml cython
+        run: sudo -H /usr/bin/python3 -m pip install ruamel.yaml cython --install-option='--no-cython-compile'
       - name: Build Cantera
         run: scons build python_cmd=/usr/bin/python3
       - name: Test Cantera
@@ -58,9 +58,42 @@ jobs:
           eval "$(conda shell.bash hook)";
           conda activate;
           conda info;
-          conda install -c conda-forge sundials scons numpy ruamel_yaml cython libboost;
+          conda install -c conda-forge sundials=5 scons numpy ruamel_yaml cython libboost;
       - name: Build Cantera
         run: |
           eval "$(conda shell.bash hook)";
           conda activate;
           scons build boost_inc_dir=$CONDA/include system_sundials=y sundials_include=$CONDA/include sundials_libdir=$CONDA/lib;
+      - name: Test Cantera
+        run: scons test
+        if: success()
+      - name: Run Test Problems
+        run: scons test_problems
+        if: success()
+      - name: Always pass this job
+        run: 'true'
+        if: always()
+
+  cython-latest:
+    name: Test pre-release version of Cython
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: Checkout the repository
+    - name: Setup python
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.8'
+        architecture: x64
+    - name: Install Apt dependencies
+      run: sudo apt-get install libboost-dev gfortran
+    - name: Install Python dependencies
+      run: |
+        python3 -m pip install ruamel.yaml scons numpy;
+        python3 -m pip install --pre cython==3 --install-options='--no-cython-compile';
+    - name: Build Cantera
+      run: python3 `which scons` build
+    - name: Test Cantera
+      run: python3 `which scons` test
+    - name: Run Test Problems
+      run: python3 `which scons` test_problems
