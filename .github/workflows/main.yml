@@ -21,7 +21,9 @@ jobs:
     - name: Install Apt dependencies
       run: sudo apt-get install libboost-dev gfortran
     - name: Install Python dependencies
-      run: python3 -m pip install ruamel.yaml cython scons numpy --install-option='--no-cython-compile'
+      run: |
+        python3 -m pip install ruamel.yaml scons numpy 
+        python3 -m pip install cython --install-option='--no-cython-compile'
     - name: Build Cantera
       run: python3 `which scons` build
     - name: Test Cantera
@@ -39,7 +41,9 @@ jobs:
       - name: Install Apt dependencies
         run: sudo apt-get install libboost-dev gfortran scons python3-numpy python3-pip python3-setuptools
       - name: Install Python dependencies
-        run: sudo -H /usr/bin/python3 -m pip install ruamel.yaml cython --install-option='--no-cython-compile'
+        run: |
+          sudo -H /usr/bin/python3 -m pip install ruamel.yaml 
+          sudo -H /usr/bin/python3 -m pip install cython --install-option='--no-cython-compile'
       - name: Build Cantera
         run: scons build python_cmd=/usr/bin/python3
       - name: Test Cantera
@@ -90,7 +94,7 @@ jobs:
     - name: Install Python dependencies
       run: |
         python3 -m pip install ruamel.yaml scons numpy;
-        python3 -m pip install --pre cython==3 --install-options='--no-cython-compile';
+        python3 -m pip install --pre cython==3 --install-option='--no-cython-compile';
     - name: Build Cantera
       run: python3 `which scons` build
     - name: Test Cantera
