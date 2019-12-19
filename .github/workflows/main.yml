@@ -55,12 +55,12 @@ jobs:
         name: Checkout the repository
       - name: Install conda dependencies
         run: |
-        eval "$(conda shell.bash hook)";
-        conda activate;
-        conda info;
-        conda install -c conda-forge sundials scons numpy ruamel_yaml cython libboost
+          eval "$(conda shell.bash hook)";
+          conda activate;
+          conda info;
+          conda install -c conda-forge sundials scons numpy ruamel_yaml cython libboost;
       - name: Build Cantera
         run: |
-        eval "$(conda shell.bash hook)";
-        conda activate;
-        scons build boost_inc_dir=$CONDA/include system_sundials=y sundials_include=$CONDA/include sundials_libdir=$CONDA/lib
+          eval "$(conda shell.bash hook)";
+          conda activate;
+          scons build boost_inc_dir=$CONDA/include system_sundials=y sundials_include=$CONDA/include sundials_libdir=$CONDA/lib;
