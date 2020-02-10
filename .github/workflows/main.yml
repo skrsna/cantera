@@ -22,10 +22,10 @@ jobs:
       run: sudo apt-get install libboost-dev gfortran
     - name: Install Python dependencies
       run: |
-        python3 -m pip install ruamel.yaml scons numpy 
+        python3 -m pip install ruamel.yaml scons numpy
         python3 -m pip install cython --install-option='--no-cython-compile'
     - name: Build Cantera
-      run: python3 `which scons` build
+      run: python3 `which scons` build -j2
     - name: Test Cantera
       run: python3 `which scons` test
     - name: Run Test Problems
@@ -42,15 +42,15 @@ jobs:
         run: sudo apt-get install libboost-dev gfortran scons python3-numpy python3-pip python3-setuptools
       - name: Install Python dependencies
         run: |
-          sudo -H /usr/bin/python3 -m pip install ruamel.yaml 
+          sudo -H /usr/bin/python3 -m pip install ruamel.yaml
           sudo -H /usr/bin/python3 -m pip install cython --install-option='--no-cython-compile'
       - name: Build Cantera
-        run: scons build python_cmd=/usr/bin/python3
+        run: scons build python_cmd=/usr/bin/python3 -j2
       - name: Test Cantera
         run: scons test
       - name: Run Test Problems
         run: scons test_problems
-  
+
   ubuntu-latest-conda-deps:
     name: Ubuntu Latest with Conda
     runs-on: ubuntu-latest
@@ -67,7 +67,7 @@ jobs:
         run: |
           eval "$(conda shell.bash hook)";
           conda activate;
-          scons build boost_inc_dir=$CONDA/include system_sundials=y sundials_include=$CONDA/include sundials_libdir=$CONDA/lib;
+          scons build boost_inc_dir=$CONDA/include system_sundials=y sundials_include=$CONDA/include sundials_libdir=$CONDA/lib -j2;
       - name: Test Cantera
         run: scons test
         if: success()
@@ -96,7 +96,7 @@ jobs:
         python3 -m pip install ruamel.yaml scons numpy;
         python3 -m pip install https://github.com/cython/cython/archive/master.zip --install-option='--no-cython-compile';
     - name: Build Cantera
-      run: python3 `which scons` build
+      run: python3 `which scons` build f90_interface=n -j2
     - name: Test Cantera
       run: python3 `which scons` test
     - name: Run Test Problems
