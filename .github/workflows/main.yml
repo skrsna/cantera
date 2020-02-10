@@ -94,7 +94,7 @@ jobs:
     - name: Install Python dependencies
       run: |
         python3 -m pip install ruamel.yaml scons numpy;
-        python3 -m pip install --pre cython==3 --install-option='--no-cython-compile';
+        python3 -m pip install https://github.com/cython/cython/archive/master.zip --install-option='--no-cython-compile';
     - name: Build Cantera
       run: python3 `which scons` build
     - name: Test Cantera
