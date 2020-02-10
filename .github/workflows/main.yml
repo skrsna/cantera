@@ -108,14 +108,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         name: Checkout the repository
-      - name: Install conda dependencies
-        run: |
-          eval "$(conda shell.bash hook)";
-          conda activate;
-          conda info;
-          conda install scons numpy ruamel_yaml cython libboost;
+      - uses: goanpeca/setup-miniconda@v1
+        with:
+          auto-update-conda: true
+          python-version: 3.7
+        name: Setup Conda
+      - name: Conda info
+        shell: bash -l {0}
+        run: conda info
+      - name: Install Conda dependencies
+        shell: bash - {0}
+        run: conda install scons numpy ruamel_yaml cython libboost;
       - name: Build Cantera
-        run: |
-          eval "$(conda shell.bash hook)";
-          conda activate;
-          scons build boost_inc_dir=%CONDA%/Library/Include -j2;
+        run: scons build boost_inc_dir=${CONDA}/Library/Include -j2;
+        shell: bash -l {0}
