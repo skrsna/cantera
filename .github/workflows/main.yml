@@ -117,7 +117,7 @@ jobs:
         shell: bash -l {0}
         run: conda info
       - name: Install Conda dependencies
-        shell: bash - {0}
+        shell: bash -l {0}
         run: conda install scons numpy ruamel_yaml cython libboost;
       - name: Build Cantera
         run: scons build boost_inc_dir=${CONDA}/Library/Include -j2;
