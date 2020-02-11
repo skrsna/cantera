@@ -119,10 +119,10 @@ jobs:
       - name: Install Conda dependencies
         shell: bash -l {0}
         run: |
-          conda install scons numpy ruamel_yaml cython libboost;
+          conda install -q scons numpy ruamel_yaml cython libboost;
           conda list;
       - name: Build Cantera
         run: |
-          echo $PATH;
-          scons build boost_inc_dir=${CONDA}/Library/Include -j2;
-        shell: bash -l {0}
+          $env:Path
+          scons build boost_inc_dir=${CONDA}/Library/Include -j2
+        shell: pwsh
