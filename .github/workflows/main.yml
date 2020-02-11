@@ -112,7 +112,7 @@ jobs:
         shell: bash
         run: git submodule update --init --recursive
       - name: Set Up Python
-        uses: setup-python@v1
+        uses: actions/setup-python@v1
         with:
           python-version: '3.8'
           architecture: 'x64'
