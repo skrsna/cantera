@@ -3,104 +3,119 @@ name: Continuous Integration
 on: [push]
 
 jobs:
-  # ubuntu-latest:
-  #   name: Ubuntu Latest Multiple Pythons
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       python-version: [ '3.5', '3.6', '3.7', '3.8' ]
+  ubuntu-latest:
+    name: Ubuntu Latest Multiple Pythons
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ '3.5', '3.6', '3.7', '3.8' ]
 
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #     name: Checkout the repository
-  #   - name: Setup python
-  #     uses: actions/setup-python@v1
-  #     with:
-  #       python-version: ${{ matrix.python-version }}
-  #       architecture: x64
-  #   - name: Install Apt dependencies
-  #     run: sudo apt-get install libboost-dev gfortran
-  #   - name: Install Python dependencies
-  #     run: |
-  #       python3 -m pip install ruamel.yaml scons numpy
-  #       python3 -m pip install cython --install-option='--no-cython-compile'
-  #   - name: Build Cantera
-  #     run: python3 `which scons` build -j2
-  #   - name: Test Cantera
-  #     run: python3 `which scons` test
-  #   - name: Run Test Problems
-  #     run: python3 `which scons` test_problems
+    steps:
+    - uses: actions/checkout@v2
+      name: Checkout the repository
+    - name: Submodule checkout
+      run: git submodule update --init --recursive
+      shell: bash
+    - name: Setup python
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+        architecture: x64
+    - name: Install Apt dependencies
+      run: sudo apt-get install libboost-dev gfortran
+    - name: Install Python dependencies
+      run: |
+        python3 -m pip install ruamel.yaml scons numpy
+        python3 -m pip install cython --install-option='--no-cython-compile'
+    - name: Build Cantera
+      run: python3 `which scons` build -j2
+    - name: Test Cantera
+      run: python3 `which scons` test
+    - name: Run Test Problems
+      run: python3 `which scons` test_problems
 
-  # ubuntu-1604-py2:
-  #   # Ubuntu 16.04 using Python 2 to run SCons and the system Python 3 for the interface
-  #   name: Python 2 running SCons on Ubuntu 16.04
-  #   runs-on: ubuntu-16.04
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       name: Checkout the repository
-  #     - name: Install Apt dependencies
-  #       run: sudo apt-get install libboost-dev gfortran scons python3-numpy python3-pip python3-setuptools
-  #     - name: Install Python dependencies
-  #       run: |
-  #         sudo -H /usr/bin/python3 -m pip install ruamel.yaml
-  #         sudo -H /usr/bin/python3 -m pip install cython --install-option='--no-cython-compile'
-  #     - name: Build Cantera
-  #       run: scons build python_cmd=/usr/bin/python3 -j2
-  #     - name: Test Cantera
-  #       run: scons test
-  #     - name: Run Test Problems
-  #       run: scons test_problems
+  ubuntu-1604-py2:
+    # Ubuntu 16.04 using Python 2 to run SCons and the system Python 3 for the interface
+    name: Python 2 running SCons on Ubuntu 16.04
+    runs-on: ubuntu-16.04
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout the repository
+      - name: Submodule checkout
+        run: git submodule update --init --recursive
+        shell: bash
+      - name: Install Apt dependencies
+        run: sudo apt-get install libboost-dev gfortran scons python3-numpy python3-pip python3-setuptools
+      - name: Install Python dependencies
+        run: |
+          sudo -H /usr/bin/python3 -m pip install ruamel.yaml
+          sudo -H /usr/bin/python3 -m pip install cython --install-option='--no-cython-compile'
+      - name: Build Cantera
+        run: scons build python_cmd=/usr/bin/python3 -j2
+      - name: Test Cantera
+        run: scons test
+      - name: Run Test Problems
+        run: scons test_problems
 
-  # ubuntu-latest-conda-deps:
-  #   name: Ubuntu Latest with Conda
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       name: Checkout the repository
-  #     - name: Install conda dependencies
-  #       run: |
-  #         eval "$(conda shell.bash hook)";
-  #         conda activate;
-  #         conda info;
-  #         conda install -c conda-forge sundials=5 scons numpy ruamel_yaml cython libboost;
-  #     - name: Build Cantera
-  #       run: |
-  #         eval "$(conda shell.bash hook)";
-  #         conda activate;
-  #         scons build boost_inc_dir=$CONDA/include system_sundials=y sundials_include=$CONDA/include sundials_libdir=$CONDA/lib -j2;
-  #     - name: Test Cantera
-  #       run: scons test
-  #       if: success()
-  #     - name: Run Test Problems
-  #       run: scons test_problems
-  #       if: success()
-  #     - name: Always pass this job
-  #       run: 'true'
-  #       if: always()
+  ubuntu-latest-conda-deps:
+    name: Ubuntu Latest with Conda
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout the repository
+      - name: Submodule checkout
+        run: git submodule update --init --recursive
+        shell: bash
+      - uses: goanpeca/setup-miniconda@v1
+        with:
+          auto-update-conda: true
+          python-version: 3.7
+        name: Set up conda
+      - name: Install conda dependencies
+        shell: bash -l {0}
+        run: |
+          conda install -c conda-forge sundials=5.0 scons numpy ruamel_yaml cython libboost fmt eigen yaml-cpp
+      - name: Build Cantera
+        run: |
+          eval "$(conda shell.bash hook)";
+          conda activate;
+          scons build extra_inc_dirs=$CONDA/include extra_lib_dirs=$CONDA/lib system_fmt=y system_eigen=y system_yamlcpp=y system_sundials=y -j2;
+      - name: Test Cantera
+        run: scons test
+        if: success()
+      - name: Run Test Problems
+        run: scons test_problems
+        if: success()
+      - name: Always pass this job
+        run: 'true'
+        if: always()
 
-  # cython-latest:
-  #   name: Test pre-release version of Cython
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #     name: Checkout the repository
-  #   - name: Setup python
-  #     uses: actions/setup-python@v1
-  #     with:
-  #       python-version: '3.8'
-  #       architecture: x64
-  #   - name: Install Apt dependencies
-  #     run: sudo apt-get install libboost-dev gfortran
-  #   - name: Install Python dependencies
-  #     run: |
-  #       python3 -m pip install ruamel.yaml scons numpy;
-  #       python3 -m pip install https://github.com/cython/cython/archive/master.zip --install-option='--no-cython-compile';
-  #   - name: Build Cantera
-  #     run: python3 `which scons` build f90_interface=n -j2
-  #   - name: Test Cantera
-  #     run: python3 `which scons` test
-  #   - name: Run Test Problems
-  #     run: python3 `which scons` test_problems
+  cython-latest:
+    name: Test pre-release version of Cython
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: Checkout the repository
+    - name: Submodule checkout
+      run: git submodule update --init --recursive
+      shell: bash
+    - name: Setup python
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.8'
+        architecture: x64
+    - name: Install Apt dependencies
+      run: sudo apt-get install libboost-dev
+    - name: Install Python dependencies
+      run: |
+        python3 -m pip install ruamel.yaml scons numpy;
+        python3 -m pip install https://github.com/cython/cython/archive/master.zip --install-option='--no-cython-compile';
+    - name: Build Cantera
+      run: python3 `which scons` build f90_interface=n -j2
+    - name: Test Cantera
+      run: python3 `which scons` test
+    - name: Run Test Problems
+      run: python3 `which scons` test_problems
 
   windows-latest:
     name: Test on latest Windows version
