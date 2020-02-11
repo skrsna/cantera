@@ -76,7 +76,10 @@ jobs:
         run: |
           conda install -q -c conda-forge sundials=5.0 scons numpy ruamel_yaml cython libboost fmt eigen yaml-cpp
       - name: Build Cantera
-        run: scons build extra_inc_dirs=$CONDA_PREFIX/include extra_lib_dirs=$CONDA_PREFIX/lib system_fmt=y system_eigen=y system_yamlcpp=y system_sundials=y -j2;
+        run: |
+          scons build extra_inc_dirs=$CONDA_PREFIX/include:$CONDA_PREFIX/include/eigen3 \
+          extra_lib_dirs=$CONDA_PREFIX/lib system_fmt=y system_eigen=y system_yamlcpp=y \
+          system_sundials=y -j2
         shell: bash -l {0}
       - name: Test Cantera
         run: scons test
