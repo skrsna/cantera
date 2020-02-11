@@ -108,6 +108,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         name: Checkout the repository
+      - name: Update submodules
+        shell: bash
+        run: git submodule update --init --recursive
       - uses: goanpeca/setup-miniconda@v1
         with:
           auto-update-conda: true
@@ -121,8 +124,9 @@ jobs:
         run: |
           conda install -q scons numpy ruamel_yaml cython libboost;
           conda list;
+      - name: Get some more info
+        run: dir C:\hostedtoolcache\windows\Boost\1.72.0
+        shell: cmd /C call {0}
       - name: Build Cantera
-        run: |
-          $env:Path
-          scons build boost_inc_dir=${CONDA}/Library/Include -j2
-        shell: pwsh
+        run: scons build boost_inc_dir=%CONDA%/Library/Include msvc_version=16.4 f90_interface=n -j2
+        shell: cmd /C call {0}
