@@ -118,6 +118,9 @@ jobs:
   windows-latest:
     name: Test on latest Windows version
     runs-on: windows-2019
+    strategy:
+      matrix:
+        vs-toolset: ['14.0', '14.1', '14.2']
     steps:
       - uses: actions/checkout@v2
         name: Checkout the repository
@@ -136,6 +139,10 @@ jobs:
           python -m pip install scons pypiwin32 numpy ruamel.yaml cython
       - name: Build Cantera
         run: |
-          "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64 -vcvars_ver=14.0 &^
-          scons build -j2 boost_inc_dir=%BOOST_ROOT% debug=n VERBOSE=y python_package=full msvc_version=14.0 f90_interface=n
+          "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" ^
+          x64 -vcvars_ver=${{ matrix.vs-toolset }} &^
+          scons build -j2 boost_inc_dir=%BOOST_ROOT% debug=n VERBOSE=y python_package=full ^
+          msvc_version=${{ matrix.vs-toolset }} f90_interface=n
         shell: cmd
+      - name: Test Cantera
+        run: scons test
