@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         python-version: [ '3.5', '3.6', '3.7', '3.8' ]
-
+      fail-fast: false
     steps:
     - uses: actions/checkout@v2
       name: Checkout the repository
@@ -117,10 +117,11 @@ jobs:
 
   windows-latest:
     name: Test on latest Windows version
-    runs-on: windows-2019
+    runs-on: windows-latest
     strategy:
       matrix:
-        vs-toolset: ['14.0', '14.1', '14.2']
+        vs-toolset: ['14.0', '14.2']
+      fail-fast: false
     steps:
       - uses: actions/checkout@v2
         name: Checkout the repository
