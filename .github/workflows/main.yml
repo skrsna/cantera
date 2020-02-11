@@ -122,4 +122,7 @@ jobs:
           python -m pip install -U pip setuptools
           python -m pip install scons pypiwin32 numpy ruamel.yaml cython
       - name: Build Cantera
-        run: scons build -j2 boost_inc_dir=%BOOST_ROOT% debug=n VERBOSE=y python_package=full
+        run: |
+          "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\vcvarsall.bat" x64
+          scons build -j2 boost_inc_dir=%BOOST_ROOT% debug=n VERBOSE=y python_package=full msvc_version=16.4 f90_interface=n
+        shell: cmd
