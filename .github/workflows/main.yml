@@ -111,16 +111,15 @@ jobs:
       - name: Update submodules
         shell: bash
         run: git submodule update --init --recursive
-      # - name: Set Up Python
-      #   uses: setup-python@v1
-      #   with:
-      #     python-version: '3.8'
-      #     architecture: 'x64'
+      - name: Set Up Python
+        uses: setup-python@v1
+        with:
+          python-version: '3.8'
+          architecture: 'x64'
       - name: Install Python dependencies
         run: |
           python -V
           python -m pip install -U pip setuptools
-          python -m pip install scons pypiwin32 numpy ruamel.yaml
-          python -m pip install cython --install-option='--no-cython-compile'
+          python -m pip install scons pypiwin32 numpy ruamel.yaml cython
       - name: Build Cantera
         run: scons build -j2 boost_inc_dir=%BOOST_ROOT% debug=n VERBOSE=y python_package=full
