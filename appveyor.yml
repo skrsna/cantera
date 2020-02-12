@@ -10,7 +10,7 @@
 #       BOOST_LIB: "1_60_0"
 #       MSVC_TOOLSET: "14.0"
 
-images:
+image:
   - Visual Studio 2019
 
 matrix:
