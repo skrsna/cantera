@@ -2,10 +2,13 @@ environment:
   matrix:
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
       BOOST_LIB: "1_71_0"
+      MSVC_TOOLSET: "14.2"
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       BOOST_LIB: "1_66_0"
+      MSVC_TOOLSET: "14.1"
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
       BOOST_LIB: "1_60_0"
+      MSVC_TOOLSET: "14.0"
 
 matrix:
   allow_failures:
@@ -14,8 +17,8 @@ matrix:
 version: 1.0.{build}
 install:
 - ps: |
-    C:\Python37-x64\python.exe -m pip install --no-cache-dir --upgrade pip
-    C:\Python37-x64\python.exe -m pip install --upgrade setuptools
+    C:\Python37-x64\python.exe -m pip install --no-cache-dir --no-warn-script-location --upgrade pip
+    C:\Python37-x64\python.exe -m pip install --upgrade --no-warn-script-location setuptools
     C:\Python37-x64\python.exe -m pip install --upgrade --no-warn-script-location wheel
     C:\Python37-x64\Scripts\pip.exe install scons==3.0.1
     C:\Python37-x64\Scripts\pip.exe install --no-cache-dir --no-warn-script-location numpy
@@ -24,7 +27,9 @@ install:
     C:\Python37-x64\Scripts\pip.exe install ruamel.yaml
 
 build_script:
-- cmd: C:\Python37-x64\Scripts\scons build -j2 boost_inc_dir=C:\Libraries\boost_%BOOST_LIB% debug=n VERBOSE=y python_package=full
+- cmd: |
+  C:\Python37-x64\Scripts\scons build -j2 boost_inc_dir=C:\Libraries\boost_%BOOST_LIB% ^
+  debug=n VERBOSE=y python_package=full msvc_version=%MSVC_TOOLSET"
 - cmd: C:\Python37-x64\Scripts\scons samples
 
 test_script:
