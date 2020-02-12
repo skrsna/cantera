@@ -1,17 +1,14 @@
-# environment:
-#   matrix:
-#     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-#       BOOST_LIB: "1_71_0"
-#       MSVC_TOOLSET: "14.2"
-#     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-#       BOOST_LIB: "1_66_0"
-#       MSVC_TOOLSET: "14.1"
-#     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-#       BOOST_LIB: "1_60_0"
-#       MSVC_TOOLSET: "14.0"
-
-image:
-  - Visual Studio 2019
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      BOOST_LIB: "1_71_0"
+      MSVC_TOOLSET: "14.2"
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      BOOST_LIB: "1_66_0"
+      MSVC_TOOLSET: "14.1"
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      BOOST_LIB: "1_60_0"
+      MSVC_TOOLSET: "14.0"
 
 matrix:
   allow_failures:
@@ -30,7 +27,7 @@ install:
     C:\Python37-x64\Scripts\pip.exe install ruamel.yaml
 
 build_script:
-- cmd: C:\Python37-x64\Scripts\scons build boost_inc_dir=C:\Libraries\boost_1_71_0 debug=n VERBOSE=y python_package=full msvc_version=14.2 -j2
+- cmd: C:\Python37-x64\Scripts\scons build boost_inc_dir=C:\Libraries\boost_%BOOST_LIB% debug=n VERBOSE=y python_package=full msvc_version=%MSVC_TOOLSET% -j2
 - cmd: C:\Python37-x64\Scripts\scons samples
 
 test_script:
