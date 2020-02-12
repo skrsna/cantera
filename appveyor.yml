@@ -28,8 +28,8 @@ install:
 
 build_script:
 - cmd: |
-  C:\Python37-x64\Scripts\scons build -j2 boost_inc_dir=C:\Libraries\boost_%BOOST_LIB% ^
-  debug=n VERBOSE=y python_package=full msvc_version=%MSVC_TOOLSET"
+    C:\Python37-x64\Scripts\scons build -j2 boost_inc_dir=C:\Libraries\boost_%BOOST_LIB% ^
+    debug=n VERBOSE=y python_package=full msvc_version=%MSVC_TOOLSET"
 - cmd: C:\Python37-x64\Scripts\scons samples
 
 test_script:
