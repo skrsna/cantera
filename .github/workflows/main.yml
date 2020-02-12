@@ -150,10 +150,10 @@ jobs:
         run: scons test
         if: success()
       - name: Building VS2019 failed, Check the Log
-        if: matrix.vs-toolset=='14.2' && (failed() || cancelled())
+        if: matrix.vs-toolset=='14.2' && (failure() || cancelled())
         run: 'true'
         shell: bash
       - name: Building VS2015 failed, Check the Log
-        if: matrix.vs-toolset=='14.2' && (failed() || cancelled())
+        if: matrix.vs-toolset=='14.2' && (failure() || cancelled())
         run: 'false'
         shell: bash
