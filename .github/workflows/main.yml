@@ -145,5 +145,15 @@ jobs:
           scons build -j2 boost_inc_dir=%BOOST_ROOT% debug=n VERBOSE=y python_package=full ^
           msvc_version=${{ matrix.vs-toolset }} f90_interface=n
         shell: cmd
+        continue-on-error: true
       - name: Test Cantera
         run: scons test
+        if: success()
+      - name: Building VS2019 failed, Check the Log
+        if: matrix.vs-toolset=='14.2' && (failed() || cancelled())
+        run: 'true'
+        shell: bash
+      - name: Building VS2015 failed, Check the Log
+        if: matrix.vs-toolset=='14.2' && (failed() || cancelled())
+        run: 'false'
+        shell: bash
