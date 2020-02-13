@@ -20,7 +20,7 @@ install:
     C:\Python37-x64\python.exe -m pip install --no-cache-dir --no-warn-script-location --upgrade pip
     C:\Python37-x64\python.exe -m pip install --upgrade --no-warn-script-location setuptools
     C:\Python37-x64\python.exe -m pip install --upgrade --no-warn-script-location wheel
-    C:\Python37-x64\Scripts\pip.exe install scons==3.1
+    C:\Python37-x64\Scripts\pip.exe install 'scons>=3.1,<3.2'
     C:\Python37-x64\Scripts\pip.exe install --no-cache-dir --no-warn-script-location numpy
     C:\Python37-x64\Scripts\pip.exe install --no-warn-script-location cython
     C:\Python37-x64\Scripts\pip.exe install pypiwin32
@@ -32,12 +32,13 @@ build_script:
 
 test_script:
 - ps: |
-    C:\Python37-x64\Scripts\scons test
-    $sconsstatus = $lastexitcode
+    C:\Python37-x64\Scripts\scons test;
+    $env:sconsstatus = $lastexitcode
+- ps: |
     $wc = New-Object 'System.Net.WebClient'
     $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test\work\gtest-general.xml))
     $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test\work\gtest-thermo.xml))
     $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test\work\gtest-equil.xml))
     $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test\work\gtest-kinetics.xml))
     $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test\work\gtest-transport.xml))
-    if ( $sconsstatus ) { exit $sconsstatus }
+    if ( $env:sconsstatus ) { exit $env:sconsstatus }
