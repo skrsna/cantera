@@ -34,11 +34,3 @@ test_script:
 - ps: |
     C:\Python37-x64\Scripts\scons test;
     $env:sconsstatus = $lastexitcode
-- ps: |
-    $wc = New-Object 'System.Net.WebClient'
-    $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test\work\gtest-general.xml))
-    $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test\work\gtest-thermo.xml))
-    $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test\work\gtest-equil.xml))
-    $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test\work\gtest-kinetics.xml))
-    $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test\work\gtest-transport.xml))
-    if ( $env:sconsstatus ) { exit $env:sconsstatus }
