@@ -9,7 +9,8 @@
 
 //! Use header-only library to avoid relocation issues with linking to the
 //! static libfmt.a
-#define FMT_HEADER_ONLY
+//#define FMT_HEADER_ONLY
+#define FMT_DEPRECATED
 
 #if CT_USE_SYSTEM_FMT
   #include "fmt/format.h"

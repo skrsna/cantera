@@ -83,6 +83,24 @@ std::vector<T> &AnyValue::asVector(size_t nMin, size_t nMax) {
     return v;
 }
 
+
+template<>
+inline AnyMap& AnyValue::as<AnyMap>() {
+    try {
+        // This is where nested AnyMaps are created when the syntax
+        // m[key1][key2] is used.
+        if (m_value->type() == typeid(void)) {
+            *m_value = AnyMap();
+            m_equals = eq_comparer<AnyMap>;
+        }
+        return boost::any_cast<AnyMap&>(*m_value);
+    } catch (boost::bad_any_cast&) {
+        throw InputFileError("AnyValue::as", *this,
+            "value of key '{}' is a '{}',\nnot an 'AnyMap'.",
+            m_key, demangle(m_value->type()));
+    }
+}
+
 template<class T>
 AnyValue& AnyValue::operator=(const std::unordered_map<std::string, T> items) {
     *m_value = AnyMap();
@@ -105,22 +123,6 @@ AnyValue& AnyValue::operator=(const std::map<std::string, T> items) {
     return *this;
 }
 
-template<>
-inline AnyMap& AnyValue::as<AnyMap>() {
-    try {
-        // This is where nested AnyMaps are created when the syntax
-        // m[key1][key2] is used.
-        if (m_value->type() == typeid(void)) {
-            *m_value = AnyMap();
-            m_equals = eq_comparer<AnyMap>;
-        }
-        return boost::any_cast<AnyMap&>(*m_value);
-    } catch (boost::bad_any_cast&) {
-        throw InputFileError("AnyValue::as", *this,
-            "value of key '{}' is a '{}',\nnot an 'AnyMap'.",
-            m_key, demangle(m_value->type()));
-    }
-}
 
 template<class T>
 std::map<std::string, T> AnyValue::asMap() const
