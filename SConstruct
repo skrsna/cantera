@@ -450,6 +450,19 @@ config_options = [
            ('y'), from a Git submodule ('n'), or to decide automatically
            ('default').""",
         'default', ('default', 'y', 'n')),
+    PathVariable(
+        'fmt_include',
+        """The directory where the fmt header files are installed. This
+           should be the directory that contains the "cvodes", "nvector", etc.
+           subdirectories. Not needed if the headers are installed in a
+           standard location, e.g., '/usr/include'.""",
+        '', PathVariable.PathAccept),
+    PathVariable(
+        'fmt_libdir',
+        """The directory where the fmt static libraries are installed.
+           Not needed if the libraries are installed in a standard location,
+           e.g., '/usr/lib'.""",
+        '', PathVariable.PathAccept),
     EnumVariable(
         'system_yamlcpp',
         """Select whether to use the yaml-cpp library from a system installation
@@ -792,6 +805,14 @@ if env['system_sundials'] in ('y','default'):
         if env['use_rpath_linkage']:
             env.Append(RPATH=env['sundials_libdir'])
 
+if env['system_fmt'] in ('y'):
+    if env['sundials_include']:
+        env.Append(CPPPATH=[env['fmt_include']])
+        env['system_fmt'] = 'y'
+    if env['fmt_libdir']:
+        env.Append(LIBPATH=[env['fmt_libdir']])
+        env['system_fmt'] = 'y'
+
 # BLAS / LAPACK configuration
 if env['blas_lapack_libs'] != '':
     env['blas_lapack_libs'] = env['blas_lapack_libs'].split(',')
@@ -913,7 +934,7 @@ if env['system_fmt'] in ('n', 'default'):
                          'Try manually checking out the submodule with:\n\n'
                          '    git submodule update --init --recursive ext/fmt\n')
 
-fmt_include = '<fmt/format.h>' if env['system_fmt'] else '"../ext/fmt/include/fmt/format.h"'
+fmt_include = env['fmt_include'] if env['system_fmt'] else '"../ext/fmt/include/fmt/format.h"'
 fmt_version_source = get_expression_value([fmt_include], 'FMT_VERSION')
 retcode, fmt_lib_version = conf.TryRun(fmt_version_source, '.cpp')
 try:
